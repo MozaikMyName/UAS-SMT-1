@@ -4,8 +4,9 @@ Tugas Besar untuk Ujian Akhir Semester 1
 Mata Kuliah: Pemrograman Dasar
 
 ## Author
-Nama: Mozaik Alismatus Karyanto Putri dan Jeanny Dylan Basuki  
-NIM: 25xxxx22 dan 25xxxx09  
+Nama: Mozaik Alismatus Karyanto Putri, Jeanny Dylan Basuki dan Mutiara Rahma Faridah
+
+NIM: 25xxxx22, 25xxxx09 dan 25xxxx15
 Kelompok : 6 (KOKOLOGI)
 
 ## Struktur Project
