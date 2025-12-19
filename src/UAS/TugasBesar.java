@@ -3,12 +3,15 @@ package UAS;
 import java.util.Scanner;
 
 public class TugasBesar {
-    static Scanner scanner;
+    static Scanner scanner = new Scanner(System.in);
     static String name;
+    static int retryCount = 0;
+    static final int MAX_RETRY = 3;
+    static char[] answers;
 
-    static void main() {
-        scanner = new Scanner(System.in);
+    // test push
 
+    public static void main(String[] args) {
 
         System.out.print("Masukkan nama : ");
         name = scanner.nextLine();
@@ -27,17 +30,22 @@ public class TugasBesar {
         System.out.println("================================================");
     }
 
+    static boolean confirmExit() {
+        System.out.print("Yakin ingin keluar? (Y/N): ");
+        String c = scanner.nextLine();
+        return c.equalsIgnoreCase("Y");
+    }
+
     static void menu(String name) {
-        int option;
 
         line();
 
         System.out.println("Hai rakyat bernama \"" + name + "\" " + "Selamat datang di Tes Kepribadian dengan Kokologi");
         System.out.println("1. Apa itu Kokologi?");
         System.out.println("2. Mulai Test!");
-        System.out.println("3. Keluar");
+        System.out.println("3. Keluar program");
         System.out.print("ketik 1/2/3 untuk memilih: ");
-        option = scanner.nextInt();
+        int option = safeIntInput(1, 3);
 
         switch (option) {
             case 1:
@@ -47,29 +55,37 @@ public class TugasBesar {
                 toTest();
                 break;
             case 3:
-                System.out.println("Keluar...");
+                if (confirmExit()) {
+                    System.out.println("Program selesai.");
+                    System.exit(0);
+                }
+                menu(name);
                 return;
+
             default:
                 System.out.println("Pilihan mu salah!");
                 menu(name);
         }
-
     }
 
     static void aboutCocology() {
-        scanner = new Scanner(System.in);
         int about;
 
         line();
 
         System.out.println("Apa yang ingin kamu tau tentang Kokologi?");
+        System.out.println("0. Kembali ke menu utama");
         System.out.println("1. Apa itu Kokologi");
         System.out.println("2. Jenis atau bentuk Tes Kokologi");
         System.out.println("3. Mengapa Kokologi ada dan digunakan");
-        System.out.print("ketik 1/2/3 untuk memilih: ");
+        System.out.print("ketik 0/1/2/3 untuk memilih: ");
         about = scanner.nextInt();
 
         switch (about) {
+            case 0:
+                System.out.println("Keluar...");
+                menu(name);
+                return;
             case 1:
                 System.out.println("Kokologi itu permainan psikologi seru dari Jepang yang bisa ungkap kepribadian atau pikiran tersembunyi lewat imajinasi sederhana. Berasal dari kata \"kokoro\" (pikiran/perasaan dalam bahasa Jepang) + \"logia\" (ilmu dalam bahasa Yunani).\n" +
                         " Diciptakan oleh Tadahiko Nagao dan Isamu Saito di buku Kokology tahun 1998. Bukan tes ilmiah beneran, tapi fun buat refleksi diri!\n" +
@@ -89,28 +105,56 @@ public class TugasBesar {
                 return;
         }
 
+        if (!scanner.hasNextInt()) {
+            System.out.println("Input harus berupa angka!");
+            scanner.next();
+            aboutCocology();
+            return;
+        }
+
         recheck("aboutcocology");
     }
 
+    static int safeIntInput(int min, int max) {
+        while (true) {
+            if (scanner.hasNextInt()) {
+                int val = scanner.nextInt();
+                scanner.nextLine(); // bersihin newline
+                if (val >= min && val <= max) {
+                    return val;
+                }
+            } else {
+                scanner.nextLine();
+            }
+            System.out.print("Input tidak valid. Masukkan angka " + min + "-" + max + ": ");
+        }
+    }
+
     static void recheck(String state) {
-        scanner = new Scanner(System.in);
-        String opt;
-
         line();
-
         System.out.print("Recheck (Y/N): ");
-        opt = scanner.nextLine();
+        String opt = scanner.nextLine();
 
         if (opt.equalsIgnoreCase("Y")) {
+            retryCount = 0;
             if (state.equalsIgnoreCase("aboutcocology")) {
                 aboutCocology();
-            } else if (state.equalsIgnoreCase("totest")) {
+            } else {
                 toTest();
             }
         } else if (opt.equalsIgnoreCase("N")) {
+            retryCount = 0;
             menu(name);
         } else {
-            recheck(state);
+            retryCount++;
+            if (retryCount > MAX_RETRY) {
+                System.out.println("Batas percobaan tercapai.");
+                retryCount = 0;
+                menu(name);
+            } else {
+                System.out.println("Input salah. Coba lagi.");
+                recheck(state);
+            }
         }
     }
 
@@ -119,7 +163,6 @@ public class TugasBesar {
     static int emotionScore = 0;
 
     static void toTest() {
-        scanner = new Scanner(System.in);
 
         logicScore = 0;
         socialScore = 0;
@@ -209,45 +252,53 @@ public class TugasBesar {
                         "C. Perasaan yang paling kuat saat itu"
         };
 
-        char[] answers = new char[questions.length];
+        answers = new char[questions.length];
 
         for (int i = 0; i < questions.length; i++) {
-            boolean valid = false;
-
-            while (!valid) {
+            while (true) {
                 line();
                 System.out.println(questions[i]);
                 System.out.print("Jawaban kamu (A/B/C): ");
-                char choice = scanner.next().toUpperCase().charAt(0);
+                String input = scanner.nextLine().toUpperCase();
+
+                if (input.length() != 1) {
+                    System.out.println("Masukkan A, B, atau C!");
+                    continue;
+                }
+
+                char choice = input.charAt(0);
+                answers[i] = choice;
 
                 switch (choice) {
-                    case 'A':
-                        logicScore += 2;
-                        valid = true;
-                        answers[i] = choice;
-                        break;
-                    case 'B':
-                        socialScore += 2;
-                        valid = true;
-                        answers[i] = choice;
-                        break;
-                    case 'C':
-                        emotionScore += 2;
-                        valid = true;
-                        answers[i] = choice;
-                        break;
-                    default:
-                        System.out.println("Input tidak valid. Masukkan A, B, atau C.");
+                    case 'A' -> logicScore += 2;
+                    case 'B' -> socialScore += 2;
+                    case 'C' -> emotionScore += 2;
+                    default -> {
+                        System.out.println("Input tidak valid!");
+                        continue;
+                    }
                 }
+                break;
             }
         }
+
         showResults();
+        line();
+        showAnswerHistory();
+    }
+
+    static void showAnswerHistory() {
+        System.out.println("Riwayat Jawaban:");
+        for (int i = 0; i < answers.length; i++) {
+            System.out.println("Soal " + (i + 1) + ": " + answers[i]);
+        }
     }
 
     static void showResults() {
         line();
         System.out.println("HASIL TES KEPRIBADIAN KOKOLOGI");
         line();
+
 
         int totalScore = logicScore + socialScore + emotionScore;
 
@@ -282,6 +333,13 @@ public class TugasBesar {
                     "Kamu sangat peka terhadap perasaan diri sendiri dan orang lain.\n" +
                             "Emosi sering memengaruhi cara kamu mengambil keputusan.\n" +
                             "Empati menjadi kekuatan utama dalam kepribadianmu.";
+
+        } else if(logicScore == socialScore && logicScore > emotionScore) {
+            type = "LOGIS SOSIAL";
+            description =
+                    "Kamu memiliki keseimbangan antara pemikiran logis dan kepedulian sosial.\n" +
+                            "Dalam mengambil keputusan, kamu mempertimbangkan fakta serta dampaknya terhadap orang lain.\n" +
+                            "Kamu mampu berpikir rasional tanpa mengabaikan nilai empati dan kerja sama.";
 
         } else {
             type = "SEIMBANG";
