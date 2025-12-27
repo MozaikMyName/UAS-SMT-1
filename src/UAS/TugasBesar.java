@@ -69,7 +69,6 @@ public class TugasBesar {
     }
 
     static void aboutCocology() {
-        int about;
 
         line();
 
@@ -79,7 +78,7 @@ public class TugasBesar {
         System.out.println("2. Jenis atau bentuk Tes Kokologi");
         System.out.println("3. Mengapa Kokologi ada dan digunakan");
         System.out.print("ketik 0/1/2/3 untuk memilih: ");
-        about = scanner.nextInt();
+        int about = safeIntInput(1, 3);
 
         switch (about) {
             case 0:
@@ -103,13 +102,6 @@ public class TugasBesar {
             default:
                 aboutCocology();
                 return;
-        }
-
-        if (!scanner.hasNextInt()) {
-            System.out.println("Input harus berupa angka!");
-            scanner.next();
-            aboutCocology();
-            return;
         }
 
         recheck("aboutcocology");
